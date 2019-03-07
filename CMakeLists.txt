@@ -148,8 +148,10 @@ target_link_libraries (${PROJECT_NAME} webrtcextra)
 
 # live555helper & live555
 if (NOT EXISTS live)
-    message ("Downloading Live555 Streaming Media...")
-    file (DOWNLOAD http://www.live555.com/liveMedia/public/live555-latest.tar.gz ${CMAKE_SOURCE_DIR}/live555-latest.tar.gz )
+    if (NOT EXISTS live555-latest.tar.gz)
+        message ("Downloading Live555 Streaming Media...")
+        file (DOWNLOAD http://www.live555.com/liveMedia/public/live555-latest.tar.gz ${CMAKE_SOURCE_DIR}/live555-latest.tar.gz )
+    endif()
 
     EXECUTE_PROCESS(
         COMMAND 7z t live555-latest.tar.gz

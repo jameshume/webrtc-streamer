@@ -24,9 +24,12 @@ endfunction()
 
 # Function to find a program end exit CMake if it cannot be found
 function (require_program program_name hint)
-  find_program(HAVE_PROG_${program_name} ${program_name})
-  if (HAVE_PROG_${program_name} MATCHES "HAVE_PROG_${program_name}-NOTFOUND")
-     message (FATAL_ERROR "${hint}")
+  find_program(PROG_${program_name} ${program_name})
+  if (PROG_${program_name} MATCHES "PROG_${program_name}-NOTFOUND")
+     message (FATAL_ERROR "${hint} - ${PROG_${program_name}}")
+  else()
+     message (STATUS "Program ${program_name} found: ${PROG_${program_name}}")
+     set(PROG_${program_name} ${PROG_${program_name}} PARENT_SCOPE)
   endif ()
 endfunction()
 
@@ -40,7 +43,7 @@ MESSAGE("WEBRTCBUILD = ${WEBRTCBUILD}\nWEBRTCROOT = ${WEBRTCROOT}\nWEBRTCDESKTOP
 set (CMAKE_BUILD_TYPE ${WEBRTCBUILD}) 
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 set (CMAKE_CXX_STANDARD 11)
-set (USE_X11 ON)
+set (USE_X11 OFF)
 
 # build version identifier
 find_package(Git)
@@ -111,10 +114,10 @@ if (NOT EXISTS ${WEBRTCROOT}/src/out/${WEBRTCBUILD}/args.gn)
 
   message ("   - Generating ninja files...")
   require_program(gn "GN meta-build system not found! Have you added the depot_tools to your path?")
-  exec_proc_and_die_on_error(WORKING_DIR "${WEBRTCROOT}/src/out/${WEBRTCBUILD}" COMMAND ${SHELLCOMMAND} gn gen .)
+  exec_proc_and_die_on_error(WORKING_DIR "${WEBRTCROOT}/src/out/${WEBRTCBUILD}" COMMAND ${SHELLCOMMAND} ${PROG_gn} gen .)
 
-  message ("   - Doing build: ${WEBRTCROOT}/src/out/${WEBRTCBUILD} COMMAND ninja ${NINJA_TARGET}")
   require_program(ninja "Ninja not installed!")
+  message ("   - Doing build: ${WEBRTCROOT}/src/out/${WEBRTCBUILD} COMMAND ${PROG_ninja} ${NINJA_TARGET}")
   SET(NINJA_TARGET webrtc rtc_json jsoncpp builtin_video_decoder_factory builtin_video_encoder_factory peerconnection p2p_server_utils)
   exec_proc_and_die_on_error(WORKING_DIR "${WEBRTCROOT}/src/out/${WEBRTCBUILD}" COMMAND ninja ${NINJA_TARGET})
 
@@ -147,6 +150,13 @@ target_link_libraries (${PROJECT_NAME} webrtcextra)
 if (NOT EXISTS live)
     message ("Downloading Live555 Streaming Media...")
     file (DOWNLOAD http://www.live555.com/liveMedia/public/live555-latest.tar.gz ${CMAKE_SOURCE_DIR}/live555-latest.tar.gz )
+
+    EXECUTE_PROCESS(
+        COMMAND 7z t live555-latest.tar.gz
+        RESULT_VARIABLE p7z_result)
+    if(NOT p7z_result STREQUAL "0")
+        message(FATAL_ERROR "The live555 archive is corrupt!")
+    endif()
 
     message("Extracting Live 555 Streaming Media...")
     require_program(7z "Utility 7zip not found but is required!")

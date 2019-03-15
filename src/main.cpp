@@ -50,6 +50,7 @@ int main(int argc, char* argv[])
 	}
 	httpAddress.append(httpPort);
 
+        std::cout << "## JH: STARTING...." << std::endl;
 	int c = 0;
 	while ((c = getopt (argc, argv, "hVv::" "c:H:w:T:A:C:" "t:S::s::" "a::q:" "n:u:U:")) != -1)
 	{
@@ -69,13 +70,16 @@ int main(int argc, char* argv[])
 			case 'q': publishFilter = optarg ; break;
 				
 			case 'C': {
+                                std::cout << "## JH: Loading config " << optarg << std::endl;
 				Json::Value root;  
 				std::ifstream stream(optarg);
 				stream >> root;
 				if (root.isMember("urls")) {
+                                        std::cout << " ## JH:      Found URLS" << std::endl;
 					Json::Value urls = root["urls"];
 					for( auto it = urls.begin() ; it != urls.end() ; it++ ) {
 						std::string name = it.key().asString();
+                                                std::cout << " ## JH:      Name: " << name << std::endl;
 						Json::Value value = *it;
 						if (value.isMember("video")) {
 							urlVideoList[name]=value["video"].asString();

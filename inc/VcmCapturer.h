@@ -51,7 +51,7 @@ class VcmCapturer : public rtc::VideoSinkInterface<webrtc::VideoFrame>,  public 
 	std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> device_info(webrtc::VideoCaptureFactory::CreateDeviceInfo());
 
 	int num_videoDevices = device_info->NumberOfDevices();
-	RTC_LOG(INFO) << "nb video devices:" << num_videoDevices;
+	RTC_LOG(LERROR) << "VCM CAP: nb video devices:" << num_videoDevices;
 	std::string deviceId;
 	for (int i = 0; i < num_videoDevices; ++i) {
 		const uint32_t kSize = 256;
@@ -62,6 +62,7 @@ class VcmCapturer : public rtc::VideoSinkInterface<webrtc::VideoFrame>,  public 
 			std::stringstream ss;
 			ss << name << i;
 			if (videourl == ss.str()) {
+						RTC_LOG(LERROR) << "VCM CAP: Selected: \"" << ss.str() << "\" id: \"" << id << "\"";
 				deviceId = id;
 				break;
 			}

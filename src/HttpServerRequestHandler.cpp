@@ -142,6 +142,7 @@ HttpServerRequestHandler::HttpServerRequestHandler(PeerConnectionManager* webRtc
             CivetServer::getParam(req_info->query_string, "audiourl", audiourl);
             CivetServer::getParam(req_info->query_string, "options", options);
         }
+		RTC_LOG(LERROR) << "## JH: API CALL |" << options << "|" << audiourl << "|" << url << "|" << peerid;
 		return m_webRtcServer->call(peerid, url, audiourl, options, in);
 	};
 

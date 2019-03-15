@@ -58,7 +58,7 @@ class CapturerFactory {
 			if (info)
 			{
 				int num_videoDevices = info->NumberOfDevices();
-				RTC_LOG(INFO) << "nb video devices:" << num_videoDevices;
+				RTC_LOG(LERROR) << "nb video devices:" << num_videoDevices;
 				for (int i = 0; i < num_videoDevices; ++i)
 				{
 					const uint32_t kSize = 256;
@@ -69,7 +69,7 @@ class CapturerFactory {
 						std::stringstream ss;
 						ss << name << i;
 						const std::string augmentedName = ss.str();
-						RTC_LOG(INFO) << "video device name:" << augmentedName << " id:" << id;
+						RTC_LOG(LERROR) << "video device name: \"" << augmentedName << "\" id: \"" << id << "\"";
 						videoDeviceList.push_back(augmentedName);
 					}
 				}

@@ -337,6 +337,7 @@ const Json::Value PeerConnectionManager::addIceCandidate(const std::string& peer
 ** -------------------------------------------------------------------------*/
 const Json::Value PeerConnectionManager::createOffer(const std::string &peerid, const std::string & videourl, const std::string & audiourl, const std::string & options)
 {
+        RTC_LOG(LERROR) << "### Creating offer - " << peerid << " - " << videourl << " - " << options;
 	RTC_LOG(INFO) << __FUNCTION__ << " video:" << videourl << " audio:" << audiourl << " options:" << options ;
 	Json::Value offer;
 
@@ -754,13 +755,20 @@ PeerConnectionManager::PeerConnectionObserver* PeerConnectionManager::CreatePeer
 ** -------------------------------------------------------------------------*/
 rtc::scoped_refptr<webrtc::VideoTrackInterface> PeerConnectionManager::CreateVideoTrack(const std::string & videourl, const std::map<std::string,std::string> & opts)
 {
-	RTC_LOG(INFO) << "videourl:" << videourl;
+	RTC_LOG(LERROR) << "## JH: CreateVideoTrack: videourl:" << videourl;
+
+
+        RTC_LOG(LERROR) << "## JH: Video camera name map:";
+	for (const auto url : m_urlVideoList)
+	{
+		RTC_LOG(LERROR) << "## JH:    - " << url.first;
+        }
 
 	std::string video = videourl;
 	auto videoit = m_urlVideoList.find(video);
 	if (videoit != m_urlVideoList.end()) {
 		video = videoit->second;
-                RTC_LOG(LS_VERBOSE) << "videourl map: " << videoit->first << " ---> " << videoit->second;
+                RTC_LOG(LERROR) << "JH: videourl map: " << videoit->first << " ---> " << videoit->second;
 	}
 
 	std::string label = video + "_video";
@@ -872,6 +880,7 @@ bool PeerConnectionManager::AddStreams(webrtc::PeerConnectionInterface* peer_con
 		std::map<std::string,std::string> opts;
 		std::string key, value;
 		while(std::getline(std::getline(is, key, '='), value,'&')) {
+			RTC_LOG(LERROR) << "## JH: Setting option \"" << key << "\" with value \"" << value << "\"";
 			opts[key] = value;	
 		}
 
